@@ -7,7 +7,6 @@ on:
 
 jobs:
   check:
-    name: Formula checks
     runs-on: macos-15
     permissions:
       actions: read
