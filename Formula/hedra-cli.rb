@@ -1,7 +1,6 @@
 class HedraCli < Formula
   desc "Command-line interface for the Hedra Web API"
   homepage "https://github.com/hedra-labs/hedra-cli"
-  version "0.2.0"
   if OS.mac?
     if Hardware::CPU.arm?
       url "https://github.com/hedra-labs/hedra-cli/releases/download/v0.2.0/hedra-cli-aarch64-apple-darwin.tar.gz"
