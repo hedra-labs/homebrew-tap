@@ -1,40 +1,40 @@
 class HedraCli < Formula
   desc "Command-line interface for the Hedra Web API — API spec 3.3.0"
   homepage "https://github.com/hedra-labs/hedra-cli"
-  version "2.0.0"
+  version "2.0.2"
   if OS.mac?
     if Hardware::CPU.arm?
-      url "https://github.com/hedra-labs/hedra-cli/releases/download/v2.0.0/hedra-cli-aarch64-apple-darwin.tar.gz"
-      sha256 "205850189ffeb9b145b35659a7207164e41e49772683e990d8cdb48e450ab4b9"
+      url "https://github.com/hedra-labs/hedra-cli/releases/download/v2.0.2/hedra-cli-aarch64-apple-darwin.tar.gz"
+      sha256 "27bd46e258ec7da6d2e7a50a42422cb17d9da397b7bfa719625c078b0363ecc1"
     end
     if Hardware::CPU.intel?
-      url "https://github.com/hedra-labs/hedra-cli/releases/download/v2.0.0/hedra-cli-x86_64-apple-darwin.tar.gz"
-      sha256 "94b6dc00272e6e06332299bba484b2f175e8d0fc5d88fb843507886e0411595a"
+      url "https://github.com/hedra-labs/hedra-cli/releases/download/v2.0.2/hedra-cli-x86_64-apple-darwin.tar.gz"
+      sha256 "ff6a6202defe3aa10cf144e376ad47d01783c319814aa9c99513699e10a904cc"
     end
   end
   if OS.linux?
     if Hardware::CPU.arm?
-      url "https://github.com/hedra-labs/hedra-cli/releases/download/v2.0.0/hedra-cli-aarch64-unknown-linux-gnu.tar.gz"
-      sha256 "c5118adb444e667fdf083e4b4e1df2f90f09d368215f1e99130bfc3c38f2e286"
+      url "https://github.com/hedra-labs/hedra-cli/releases/download/v2.0.2/hedra-cli-aarch64-unknown-linux-gnu.tar.gz"
+      sha256 "a113046dc0321f9da0882eb963225981e41cd978b5d9c79e122cc610dbca28e2"
     end
     if Hardware::CPU.intel?
-      url "https://github.com/hedra-labs/hedra-cli/releases/download/v2.0.0/hedra-cli-x86_64-unknown-linux-gnu.tar.gz"
-      sha256 "af184b102b7785e78e1a2dc3cd3dbc36eaec5d3a5c149a8a5654a151a35ef770"
+      url "https://github.com/hedra-labs/hedra-cli/releases/download/v2.0.2/hedra-cli-x86_64-unknown-linux-gnu.tar.gz"
+      sha256 "965f70f576a16b39863d5640719356215d4e043475016c91e38e118812d204fa"
     end
   end
   license "Apache-2.0"
 
   BINARY_ALIASES = {
-    "aarch64-apple-darwin": {},
-    "aarch64-unknown-linux-gnu": {},
+    "aarch64-apple-darwin":               {},
+    "aarch64-unknown-linux-gnu":          {},
     "aarch64-unknown-linux-musl-dynamic": {},
-    "aarch64-unknown-linux-musl-static": {},
-    "x86_64-apple-darwin": {},
-    "x86_64-pc-windows-gnu": {},
-    "x86_64-unknown-linux-gnu": {},
-    "x86_64-unknown-linux-musl-dynamic": {},
-    "x86_64-unknown-linux-musl-static": {}
-  }
+    "aarch64-unknown-linux-musl-static":  {},
+    "x86_64-apple-darwin":                {},
+    "x86_64-pc-windows-gnu":              {},
+    "x86_64-unknown-linux-gnu":           {},
+    "x86_64-unknown-linux-musl-dynamic":  {},
+    "x86_64-unknown-linux-musl-static":   {},
+  }.freeze
 
   def target_triple
     cpu = Hardware::CPU.arm? ? "aarch64" : "x86_64"
