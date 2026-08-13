@@ -1,40 +1,40 @@
 class HedraCli < Formula
-  desc "Command-line interface for the Hedra Web API"
+  desc "Command-line interface for the Hedra Web API — API spec 3.2.2"
   homepage "https://github.com/hedra-labs/hedra-cli"
-  version "0.2.0"
+  version "1.0.0"
   if OS.mac?
     if Hardware::CPU.arm?
-      url "https://github.com/hedra-labs/hedra-cli/releases/download/v0.2.0/hedra-cli-aarch64-apple-darwin.tar.gz"
-      sha256 "7ce8aadd20a6ffa9ff001748128536ba501b7ecd8014836a5f0d53478efdcf98"
+      url "https://github.com/hedra-labs/hedra-cli/releases/download/v1.0.0/hedra-cli-aarch64-apple-darwin.tar.gz"
+      sha256 "5bb181b0721958df097fdb2b29f1a2e7cb1f79af2f22581505780d43e9dc763d"
     end
     if Hardware::CPU.intel?
-      url "https://github.com/hedra-labs/hedra-cli/releases/download/v0.2.0/hedra-cli-x86_64-apple-darwin.tar.gz"
-      sha256 "ca960c9811112dfcbeacf82cfd0e325e5942d8c575c38a6033d0b640b7aab5c6"
+      url "https://github.com/hedra-labs/hedra-cli/releases/download/v1.0.0/hedra-cli-x86_64-apple-darwin.tar.gz"
+      sha256 "d4a90804e5f431b2784b49a72e466669e61b87515805d0bbe918734a01dc8282"
     end
   end
   if OS.linux?
     if Hardware::CPU.arm?
-      url "https://github.com/hedra-labs/hedra-cli/releases/download/v0.2.0/hedra-cli-aarch64-unknown-linux-gnu.tar.gz"
-      sha256 "931255308927efdf2c6053184956e1b90dd20ca197ab162f3f04af7f78c32f88"
+      url "https://github.com/hedra-labs/hedra-cli/releases/download/v1.0.0/hedra-cli-aarch64-unknown-linux-gnu.tar.gz"
+      sha256 "b21e76ed6693a7b935ec13659c4eb30570fa0eff54c9111bcf5277863c9269df"
     end
     if Hardware::CPU.intel?
-      url "https://github.com/hedra-labs/hedra-cli/releases/download/v0.2.0/hedra-cli-x86_64-unknown-linux-gnu.tar.gz"
-      sha256 "cce070705477e9d5336ff35b27cc54e13fe7790dcb9eec3ab93a2587bc090092"
+      url "https://github.com/hedra-labs/hedra-cli/releases/download/v1.0.0/hedra-cli-x86_64-unknown-linux-gnu.tar.gz"
+      sha256 "0772268de8fd15d50c8ffbff366bffdb6aaf43b07200c175d14d4e1b1e7daaa0"
     end
   end
   license "Apache-2.0"
 
   BINARY_ALIASES = {
-    "aarch64-apple-darwin":               {},
-    "aarch64-unknown-linux-gnu":          {},
+    "aarch64-apple-darwin": {},
+    "aarch64-unknown-linux-gnu": {},
     "aarch64-unknown-linux-musl-dynamic": {},
-    "aarch64-unknown-linux-musl-static":  {},
-    "x86_64-apple-darwin":                {},
-    "x86_64-pc-windows-gnu":              {},
-    "x86_64-unknown-linux-gnu":           {},
-    "x86_64-unknown-linux-musl-dynamic":  {},
-    "x86_64-unknown-linux-musl-static":   {},
-  }.freeze
+    "aarch64-unknown-linux-musl-static": {},
+    "x86_64-apple-darwin": {},
+    "x86_64-pc-windows-gnu": {},
+    "x86_64-unknown-linux-gnu": {},
+    "x86_64-unknown-linux-musl-dynamic": {},
+    "x86_64-unknown-linux-musl-static": {}
+  }
 
   def target_triple
     cpu = Hardware::CPU.arm? ? "aarch64" : "x86_64"
@@ -52,10 +52,18 @@ class HedraCli < Formula
   end
 
   def install
-    bin.install "hedra" if OS.mac? && Hardware::CPU.arm?
-    bin.install "hedra" if OS.mac? && Hardware::CPU.intel?
-    bin.install "hedra" if OS.linux? && Hardware::CPU.arm?
-    bin.install "hedra" if OS.linux? && Hardware::CPU.intel?
+    if OS.mac? && Hardware::CPU.arm?
+      bin.install "hedra-cli"
+    end
+    if OS.mac? && Hardware::CPU.intel?
+      bin.install "hedra-cli"
+    end
+    if OS.linux? && Hardware::CPU.arm?
+      bin.install "hedra-cli"
+    end
+    if OS.linux? && Hardware::CPU.intel?
+      bin.install "hedra-cli"
+    end
 
     install_binary_aliases!
 
