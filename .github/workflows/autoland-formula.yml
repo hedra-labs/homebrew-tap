@@ -1,0 +1,189 @@
+name: Autoland formula PRs
+
+# Approves and merges the Homebrew formula pull requests that hedra-cli's
+# release workflow opens here.
+#
+# They are pull requests because `main` requires one: a release cannot push the
+# formula straight to it. That is also the first time the formula gets
+# syntax-checked, since ci.yml runs `ruby -c` on `pull_request` only — so this
+# waits for that check and refuses to land a red one.
+#
+# Two identities, both Apps, because GitHub refuses self-approval: hedra-cli
+# opens the PR as hedra-sdk-ci-app[bot], and this approves as
+# hedra-tap-auto-approver[bot]. Not the workflow's own GITHUB_TOKEN — org policy
+# forbids Actions approving pull requests, and an App token is not subject to it.
+#
+# Safety: pull_request_target runs the workflow definition from `main`, not from
+# the pull request, and nothing here checks out or executes PR content — the
+# formula is read as data through the API. The gate is the author's immutable
+# numeric account ID.
+
+on:
+  pull_request_target:
+    types: [opened, reopened, synchronize]
+  workflow_dispatch:
+    inputs:
+      pr:
+        description: Pull request number to land
+        required: true
+
+permissions:
+  contents: write
+  pull-requests: write
+  checks: read
+
+concurrency:
+  group: autoland-formula
+  cancel-in-progress: false
+
+jobs:
+  autoland:
+    runs-on: ubuntu-latest
+    # Cheap pre-filter so unrelated pull requests do not start a job at all. Not
+    # the security boundary — the script re-reads all of this from the API,
+    # which is also what makes a workflow_dispatch safe.
+    if: >-
+      github.event_name != 'pull_request_target' ||
+      (github.event.pull_request.base.ref == 'main' &&
+       startsWith(github.event.pull_request.head.ref, 'formula/') &&
+       contains(fromJSON('[315532903]'), github.event.pull_request.user.id))
+    steps:
+      # A dedicated App, installed on this repository and nothing else, holding
+      # only Pull requests: write and Contents: write. An App's private key mints
+      # tokens for every repository that App is installed on — the key cannot be
+      # scoped, only the token you ask for can — so an App with one installation
+      # and two permissions is worth almost nothing if this repo's secrets leak.
+      - name: Mint the approver's token
+        id: approver
+        uses: actions/create-github-app-token@v3
+        with:
+          client-id: ${{ vars.TAP_APPROVER_APP_CLIENT_ID }}
+          private-key: ${{ secrets.TAP_APPROVER_APP_PRIVATE_KEY }}
+
+      - name: Approve and land the formula PR
+        env:
+          GH_TOKEN: ${{ steps.approver.outputs.token }}
+          # The approver App has no `checks` permission, so the poll below needs
+          # the workflow's own token.
+          CHECKS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          PR: ${{ github.event.pull_request.number || inputs.pr }}
+          # hedra-sdk-ci-app[bot], which hedra-cli opens these as. An account ID,
+          # not a login: `gh pr list --json author` exposes only login/is_bot,
+          # and a login is mutable.
+          FORMULA_BOT_ID: "315532903"
+          CHECK_NAME: "Formula syntax"
+        run: |
+          set -euo pipefail
+
+          meta="$(gh api "repos/${REPO}/pulls/${PR}")"
+          author_id="$(jq -r '.user.id' <<<"$meta")"
+          base="$(jq -r '.base.ref' <<<"$meta")"
+          head_ref="$(jq -r '.head.ref' <<<"$meta")"
+          head_sha="$(jq -r '.head.sha' <<<"$meta")"
+
+          if [[ "$(jq -r '.state' <<<"$meta")" != "open" ]]; then
+            echo "#${PR} is not open; nothing to land."
+            exit 0
+          fi
+          if [[ "$(jq -r '.draft' <<<"$meta")" == "true" ]]; then
+            echo "#${PR} is a draft; leaving it alone."
+            exit 0
+          fi
+
+          if [[ "$author_id" != "$FORMULA_BOT_ID" ]]; then
+            echo "::error::#${PR} was opened by account ${author_id}, not the formula bot (${FORMULA_BOT_ID}). Refusing to autoland."
+            exit 1
+          fi
+          if [[ "$base" != "main" || "$head_ref" != formula/* ]]; then
+            echo "::error::#${PR} is ${head_ref} -> ${base}; expected formula/** -> main. Refusing to autoland."
+            exit 1
+          fi
+
+          # Defence in depth against a compromised author: one file pattern, and
+          # `Formula/*` alone would not do — a case glob's `*` spans `/`, so it
+          # would also accept Formula/../.github/workflows/x.rb.
+          files="$(gh api "repos/${REPO}/pulls/${PR}/files" --paginate --jq '.[].filename')"
+          if [[ -z "$files" ]]; then
+            echo "::error::#${PR} changes no files."
+            exit 1
+          fi
+          while read -r f; do
+            [[ -z "$f" ]] && continue
+            if [[ ! "$f" =~ ^Formula/[^/]+\.rb$ ]]; then
+              echo "::error::#${PR} changes ${f}, which is not a Formula/*.rb file. Refusing to autoland."
+              exit 1
+            fi
+          done <<<"$files"
+          echo "Files: $(tr '\n' ' ' <<<"$files")"
+
+          # Wait for the syntax check. It is not a required status check, so
+          # nothing else would stop a red formula landing.
+          deadline=$(( SECONDS + 900 ))
+          while :; do
+            conclusion="$(GH_TOKEN="$CHECKS_TOKEN" gh api "repos/${REPO}/commits/${head_sha}/check-runs" \
+              --jq "[.check_runs[] | select(.name == \"${CHECK_NAME}\") | select(.status == \"completed\")] | sort_by(.completed_at) | last | .conclusion // empty")"
+            [[ -n "$conclusion" ]] && break
+            if (( SECONDS > deadline )); then
+              echo "::error::${CHECK_NAME} has not concluded on ${head_sha} after 15 minutes."
+              exit 1
+            fi
+            sleep 15
+          done
+
+          if [[ "$conclusion" != "success" ]]; then
+            gh pr comment "$PR" --repo "$REPO" \
+              --body "Autoland: \`${CHECK_NAME}\` concluded \`${conclusion}\`. Leaving this for a human."
+            echo "::error::${CHECK_NAME} concluded ${conclusion}."
+            exit 1
+          fi
+          echo "${CHECK_NAME}: success."
+
+          # Attach auto-merge BEFORE approving. While the PR is still BLOCKED for
+          # want of a review, --auto has something to wait for and attaches
+          # reliably; enablePullRequestAutoMerge refuses with "unstable status" on
+          # a PR with nothing left to wait for, which a post-approval call often
+          # hits. Auto-merge is disabled on this repository today, so the expected
+          # path is the fallback below; attaching is tried first so that enabling
+          # it later needs no change here.
+          auto_attached=false
+          if [[ "$(gh pr view "$PR" --repo "$REPO" --json autoMergeRequest --jq '.autoMergeRequest != null')" == "true" ]]; then
+            auto_attached=true
+            echo "Auto-merge already attached."
+          else
+            set +e
+            out="$(gh pr merge --auto --squash --delete-branch "$PR" --repo "$REPO" 2>&1)"; rc=$?
+            set -e
+            echo "$out"
+            if [[ $rc -eq 0 ]]; then
+              auto_attached=true
+            else
+              echo "Could not attach auto-merge; will merge directly once approved."
+            fi
+          fi
+
+          if [[ "$(gh pr view "$PR" --repo "$REPO" --json reviewDecision --jq .reviewDecision)" != "APPROVED" ]]; then
+            set +e
+            out="$(gh pr review --approve "$PR" --repo "$REPO" 2>&1)"; rc=$?
+            set -e
+            echo "$out"
+            if [[ $rc -ne 0 ]]; then
+              case "$out" in
+                *"not permitted"*|*"Resource not accessible"*)
+                  echo "::error::The approver App may not approve here. Check it is installed on ${REPO} with Pull requests: write. This deliberately does not use GITHUB_TOKEN, so the Actions approval setting is not the fix." ;;
+                *"can not approve their own"*|*"own pull request"*)
+                  echo "::error::The approver and the author are the same account; they must be different Apps." ;;
+              esac
+              exit 1
+            fi
+          else
+            echo "Already approved."
+          fi
+
+          if [[ "$auto_attached" == "true" ]]; then
+            echo "Auto-merge is attached; GitHub will land #${PR} on its own."
+            exit 0
+          fi
+
+          gh pr merge --squash --delete-branch "$PR" --repo "$REPO"
+          echo "Merged #${PR}."
