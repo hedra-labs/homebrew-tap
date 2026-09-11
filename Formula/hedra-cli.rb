@@ -1,25 +1,25 @@
 class HedraCli < Formula
   desc "Command-line interface for the Hedra Web API — API spec 3.16.6"
   homepage "https://github.com/hedra-labs/hedra-cli"
-  version "5.3.0"
+  version "5.3.1"
   if OS.mac?
     if Hardware::CPU.arm?
-      url "https://github.com/hedra-labs/hedra-cli/releases/download/v5.3.0/hedra-cli-aarch64-apple-darwin.tar.gz"
-      sha256 "b607cf059ef3078760d804d3fd19124ff75c1a6b2968526f8c154ee7e533c3a5"
+      url "https://github.com/hedra-labs/hedra-cli/releases/download/v5.3.1/hedra-cli-aarch64-apple-darwin.tar.gz"
+      sha256 "659afb30738de518b874fc541a2aa9cb54e85443213777889f03b24adb01f07a"
     end
     if Hardware::CPU.intel?
-      url "https://github.com/hedra-labs/hedra-cli/releases/download/v5.3.0/hedra-cli-x86_64-apple-darwin.tar.gz"
-      sha256 "54f0d1404109449a00b0d26cebd96e43ec2d9c6d7eb53428e9e4c2b9e815241f"
+      url "https://github.com/hedra-labs/hedra-cli/releases/download/v5.3.1/hedra-cli-x86_64-apple-darwin.tar.gz"
+      sha256 "0f0b95812fe34e72f870daaeb4cfbe2d9e8685acc641a11d2dea0acde7cc8f71"
     end
   end
   if OS.linux?
     if Hardware::CPU.arm?
-      url "https://github.com/hedra-labs/hedra-cli/releases/download/v5.3.0/hedra-cli-aarch64-unknown-linux-gnu.tar.gz"
-      sha256 "b3d8baf99945dc4d76e411b0ccbe40ff89fcd4e16989757f16c7e91586bf4b49"
+      url "https://github.com/hedra-labs/hedra-cli/releases/download/v5.3.1/hedra-cli-aarch64-unknown-linux-gnu.tar.gz"
+      sha256 "7960c77bfa30efa65fe008938ea6d4f2496f47ed0f50e08fe31b6e18b30a5bd3"
     end
     if Hardware::CPU.intel?
-      url "https://github.com/hedra-labs/hedra-cli/releases/download/v5.3.0/hedra-cli-x86_64-unknown-linux-gnu.tar.gz"
-      sha256 "6e8953f5fce2c1e74319155ee4c8bd926b147d44b3fbc383785bfa315bf8f7ee"
+      url "https://github.com/hedra-labs/hedra-cli/releases/download/v5.3.1/hedra-cli-x86_64-unknown-linux-gnu.tar.gz"
+      sha256 "ef9e560ab11407daf353ae6cd9eb83fc8181e8dc9dff800ccae67f1376e4ac02"
     end
   end
   license "Apache-2.0"
