@@ -1,25 +1,25 @@
 class HedraCli < Formula
   desc "Command-line interface for the Hedra Web API — API spec 3.22.0"
-  homepage "https://github.com/hedra-labs/hedra-cli"
-  version "8.0.0"
+  homepage "https://www.hedra.com/docs"
+  version "8.0.1"
   if OS.mac?
     if Hardware::CPU.arm?
-      url "https://github.com/hedra-labs/hedra-cli/releases/download/v8.0.0/hedra-cli-aarch64-apple-darwin.tar.gz"
-      sha256 "7aa3d384dd81a3427715eb206163c3a6e081f2d5a38ec466f76c0bdeb6c9000c"
+      url "https://github.com/hedra-labs/hedra-cli/releases/download/v8.0.1/hedra-cli-aarch64-apple-darwin.tar.gz"
+      sha256 "f429b199a500772d66607acf522231cb29926c19600248d1590c42d46a69a974"
     end
     if Hardware::CPU.intel?
-      url "https://github.com/hedra-labs/hedra-cli/releases/download/v8.0.0/hedra-cli-x86_64-apple-darwin.tar.gz"
-      sha256 "2409f6a85f9f91ac00265e310f00c510b91f527e91e3367d4e97daf051b0be14"
+      url "https://github.com/hedra-labs/hedra-cli/releases/download/v8.0.1/hedra-cli-x86_64-apple-darwin.tar.gz"
+      sha256 "92b789b3d775c7937dcfa88ee9ae7437ebfe2d64a11f97fd3cc4e4693c206f4e"
     end
   end
   if OS.linux?
     if Hardware::CPU.arm?
-      url "https://github.com/hedra-labs/hedra-cli/releases/download/v8.0.0/hedra-cli-aarch64-unknown-linux-gnu.tar.gz"
-      sha256 "eef27506970b669c6830aee086ad6d4d0ce4b19d3253aef5fc65648bbc457216"
+      url "https://github.com/hedra-labs/hedra-cli/releases/download/v8.0.1/hedra-cli-aarch64-unknown-linux-gnu.tar.gz"
+      sha256 "476965d26c911ecad903bdaa6fc9ed6b393e1960eeb985cee092f0a6ce96f0fd"
     end
     if Hardware::CPU.intel?
-      url "https://github.com/hedra-labs/hedra-cli/releases/download/v8.0.0/hedra-cli-x86_64-unknown-linux-gnu.tar.gz"
-      sha256 "98b92362e84bfc31844de96cd4a41b9daf2041c6e033c8070ad555e7d0dee1e9"
+      url "https://github.com/hedra-labs/hedra-cli/releases/download/v8.0.1/hedra-cli-x86_64-unknown-linux-gnu.tar.gz"
+      sha256 "987b743bfe3357ef90e8bcafb1a17ca19b6e31c5d1ddc461e1fde46429f1a24f"
     end
   end
   license "Apache-2.0"
