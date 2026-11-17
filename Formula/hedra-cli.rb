@@ -1,25 +1,25 @@
 class HedraCli < Formula
-  desc "Command-line interface for the Hedra Web API — API spec 3.22.0"
+  desc "Command-line interface for the Hedra Web API — API spec 3.24.10"
   homepage "https://www.hedra.com/docs"
-  version "8.0.1"
+  version "9.0.0"
   if OS.mac?
     if Hardware::CPU.arm?
-      url "https://github.com/hedra-labs/hedra-cli/releases/download/v8.0.1/hedra-cli-aarch64-apple-darwin.tar.gz"
-      sha256 "f429b199a500772d66607acf522231cb29926c19600248d1590c42d46a69a974"
+      url "https://github.com/hedra-labs/hedra-cli/releases/download/v9.0.0/hedra-cli-aarch64-apple-darwin.tar.gz"
+      sha256 "faf88a18ff28cdaeaa9744cff5f3bf81c1ef1534a5dd67482b2aa92652c6cafa"
     end
     if Hardware::CPU.intel?
-      url "https://github.com/hedra-labs/hedra-cli/releases/download/v8.0.1/hedra-cli-x86_64-apple-darwin.tar.gz"
-      sha256 "92b789b3d775c7937dcfa88ee9ae7437ebfe2d64a11f97fd3cc4e4693c206f4e"
+      url "https://github.com/hedra-labs/hedra-cli/releases/download/v9.0.0/hedra-cli-x86_64-apple-darwin.tar.gz"
+      sha256 "20f66895a840f20d0ccbb564cdce573c2e2015b60fbe7095b961394166f984e5"
     end
   end
   if OS.linux?
     if Hardware::CPU.arm?
-      url "https://github.com/hedra-labs/hedra-cli/releases/download/v8.0.1/hedra-cli-aarch64-unknown-linux-gnu.tar.gz"
-      sha256 "476965d26c911ecad903bdaa6fc9ed6b393e1960eeb985cee092f0a6ce96f0fd"
+      url "https://github.com/hedra-labs/hedra-cli/releases/download/v9.0.0/hedra-cli-aarch64-unknown-linux-gnu.tar.gz"
+      sha256 "ae2e2f5ff0a20ef4b463be3e059214976a720a3d97b3c240820cc2f66a06ee0b"
     end
     if Hardware::CPU.intel?
-      url "https://github.com/hedra-labs/hedra-cli/releases/download/v8.0.1/hedra-cli-x86_64-unknown-linux-gnu.tar.gz"
-      sha256 "987b743bfe3357ef90e8bcafb1a17ca19b6e31c5d1ddc461e1fde46429f1a24f"
+      url "https://github.com/hedra-labs/hedra-cli/releases/download/v9.0.0/hedra-cli-x86_64-unknown-linux-gnu.tar.gz"
+      sha256 "22cf7eab7aa109778074e92a3d69e466d0da04fc7c8e7d038524ddc49aac175d"
     end
   end
   license "Apache-2.0"
